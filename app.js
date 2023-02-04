@@ -2,7 +2,7 @@ let numOne = "";
 let operandOne = "";
 let numTwo = "";
 let operandTwo = "";
-let operator = "";
+let operator = null;
 let result = "";
 
 const screen = document.getElementById("screen")
@@ -44,7 +44,7 @@ function appendEntry(num) {
         numOne += num;
     } else if (operandOne !== "" && operator === "/" && numTwo === "0" && num === "0") {
         botScreen.textContent = ":(";
-    } else if (operandOne !== "" && operator !== "") {
+    } else if (operandOne !== "" && operator !== null) {
         botScreen.textContent += num;
         numTwo += num;
     }
@@ -58,7 +58,7 @@ function addDecimal() {
         if (operandOne === "") {
             botScreen.textContent += ".";
             numOne += ".";
-        } else if (operandOne !== "" && operator !== "") {
+        } else if (operandOne !== "" && operator !== null) {
             botScreen.textContent += ".";
             numTwo += ".";
         }
@@ -72,38 +72,28 @@ function back() {
     }
 }
 
-
 // Functions for add, subtract, multiply, divide
 
-// If result is not 0 then make result operand one and empty numTwo and operandTwo
-// top screen should show new operand and operator
-// If operandOne is empty then numOne becomes operandOne and shows on top with operator
-// If operator is not empty but operand Two is then change operator on top
-// If operator is not empty and neither is operand two 
-
-let secOperator = "";
+let secOperator = null;
 
 function appendOperator(opSign) {
-    if (result !== "") {
-        operator = `${opSign}`;
+    if (operandOne !== "" && numTwo !== "") {
+        secOperator = opSign;
+        solve(operandOne, numTwo, operator);
+    } else if (result !== null) {
+        operator = opSign;
         operandOne = Number(numOne);
         topScreen.textContent = `${operandOne} ${operator}`
         botScreen.textContent = ""
-    } else if (operandOne === "" && operator === "") {
-        operator = `${opSign}`;
+    } else if (operandOne === "" && operator === null) {
+        operator = opSign;
         operandOne = Number(numOne);
         topScreen.textContent = `${operandOne} ${operator}`;
         botScreen.textContent = ""
-    } else if (operator !== "" && operandTwo === "") {
-        operator = `${opSign}`;
+    } else if (operator !== null && operandTwo === "") {
+        operator = opSign;
         topScreen.textContent = `${operandOne} ${operator}`;
         botScreen.textContent = ""
-    } else if (operator !== "" && operandTwo !== "") {
-        solveOperator();
-        // operandOne = Number(numOne)
-        secOperator = `${opSign}`;
-        // topScreen.textContent = `${operandOne} ${operator}`;
-        // console.log(solve);
     }
 }
 
@@ -124,80 +114,69 @@ function shorten(e) {
 // // Operate function for when "=" is clicked or when second operator is clicked (i.e. 1 + 2 + => causes operate() to run and return 3 +...)
 
 function solve(operandOne, numTwo, operator) {
-    operandTwo = Number(numTwo)
+    operandTwo = Number(numTwo);
     switch (operator) {
         case "+":
             value = operandOne + operandTwo;
-            fit = shorten(value)
+            fit = shorten(value);
             result = parseFloat(fit);
             break;
         case "-":
             value = operandOne - operandTwo;
-            fit = shorten(value)
+            fit = shorten(value);
             result = parseFloat(fit);
             break;
         case "*":
             value = operandOne * operandTwo;
-            fit = shorten(value)
+            fit = shorten(value);
             result = parseFloat(fit);
             break;
         case "/":
             value = operandOne / operandTwo;
-            fit = shorten(value)
+            fit = shorten(value);
             result = parseFloat(fit);
             break;
         case "^":
             value = operandOne ** operandTwo;
-            fit = shorten(value)
+            fit = shorten(value);
             result = parseFloat(fit);
             break;
     }
-    topScreen.textContent = `${operandOne} ${operator} ${operandTwo} =`;
-    botScreen.textContent = `${result}`;
-    numOne = result;
-    reset();
-}
+    if (secOperator !== null) {
+        numOne = result;
+        topScreen.textContent = `${numOne} ${secOperator}`;
+        botScreen.textContent = "";
+        resetSoft = "soft";
+        reset(resetSoft);
+    } else {
+        topScreen.textContent = `${operandOne} ${operator} ${operandTwo} =`;
+        botScreen.textContent = `${result}`;
+        numOne = result;
+        resetHard = "hard";
+        reset(resetHard);
+    }
 
-function solveOperator(operandOne, numTwo, operator) {
-    operandTwo = Number(numTwo)
-    switch (operator) {
-        case "+":
-            value = operandOne + operandTwo;
-            fit = shorten(value)
-            result = parseFloat(fit);
-            break;
-        case "-":
-            value = operandOne - operandTwo;
-            fit = shorten(value)
-            result = parseFloat(fit);
-            break;
-        case "*":
-            value = operandOne * operandTwo;
-            fit = shorten(value)
-            result = parseFloat(fit);
-            break;
-        case "/":
-            value = operandOne / operandTwo;
-            fit = shorten(value)
-            result = parseFloat(fit);
-            break;
-        case "^":
-            value = operandOne ** operandTwo;
-            fit = shorten(value)
-            result = parseFloat(fit);
-            break;
-    }
-    topScreen.textContent = `${result} ${secOperator}`;
-    botScreen.textContent = "";
-    numOne = result;
-    reset();
 }
 
 // Function to reset some data
 
-function reset() {
-    numTwo = "";
-    operandTwo = "";
+function reset(method) {
+    switch(method) {
+        case "hard":
+            numTwo = "";
+            operandTwo = "";
+            operator = null;
+            result = "";
+            break;
+        case "soft":
+            numTwo = "";
+            operandTwo = "";
+            operator = secOperator;
+            secOperator = null;
+            operandOne = Number(numOne);
+            result = "";
+            break;
+    }
 }
 
 // Function to clear all existing data
@@ -209,12 +188,10 @@ function clear() {
     operandOne = "";
     numTwo = "";
     operandTwo = "";
-    operator = "";
+    operator = null;
     result = "";
 }
 
 // Notes:
 // Need to round answers with long decimals so they don't overflow
-// Add decimal button but make sure that number can't have more than one decimal
-// Add backspace button
 // Add keyboard support (might have issues with /)

@@ -48,7 +48,7 @@ function appendEntry(num) {
         } else if (operandOne !== "" && operator !== null) {
             numTwo = changeSign(numTwo);
             botScreen.textContent = numTwo;
-        }
+        } sayText("invert sign");
     } else {
         if (operandOne === "") {
             if (numOne.length < 13) {
@@ -117,7 +117,23 @@ function appendOperator(opSign) {
         topScreen.textContent = `${operandOne} ${operator}`;
         botScreen.textContent = ""
     }
-    sayText(operator);
+    switch (opSign) {
+        case "^":
+            sayText("to the power of");
+            break;
+        case "+":
+            sayText("plus");
+            break;
+        case "-":
+            sayText("minus");
+            break;
+        case "/":
+            sayText("divided by");
+            break;
+        case "*":
+            sayText("multiplied by");
+            break;
+    }
 }
 
 function shorten(num) {

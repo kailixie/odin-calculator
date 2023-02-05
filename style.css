@@ -163,8 +163,20 @@ footer {
     height: 40px;
     font-family: 'Prompt', sans-serif;
     font-size: 14px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
     text-align: center;
     width: 100%;
+}
+
+ion-icon {
+    font-size: 16px;
+}
+
+a {
+    text-decoration: none;
+    color: #F6f6e9;
 }
 
 /* #1d7151 */

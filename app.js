@@ -62,7 +62,7 @@ function appendEntry(num) {
                 botScreen.textContent += num;
                 numTwo += num;
             }
-        }
+        } sayText(num);
     }
 }
 
@@ -84,14 +84,14 @@ function addDecimal() {
             botScreen.textContent += ".";
             numTwo += ".";
         }
-    }
+    } sayText("point")
 }
 
 // Delete last number entered
 function back() {
     if (botScreen.textContent.length > 0) {
         botScreen.textContent = botScreen.textContent.slice(0, -1);
-    }
+    } sayText("delete");
 }
 
 // Functions for add, subtract, multiply, divide
@@ -117,6 +117,7 @@ function appendOperator(opSign) {
         topScreen.textContent = `${operandOne} ${operator}`;
         botScreen.textContent = ""
     }
+    sayText(operator);
 }
 
 function shorten(num) {
@@ -159,11 +160,13 @@ function solve(operandOne, numTwo, operator) {
     }
     if (secOperator !== null) {
         numOne = result;
+        sayText(`equals ${result}`);
         topScreen.textContent = `${numOne} ${secOperator}`;
         botScreen.textContent = "";
         resetSoft = "soft";
         reset(resetSoft);
     } else {
+        sayText(`equals ${result}`);
         topScreen.textContent = `${operandOne} ${operator} ${operandTwo} =`;
         botScreen.textContent = `${result}`;
         numOne = result.toString();
@@ -206,8 +209,19 @@ function clear() {
     operandTwo = "";
     operator = null;
     result = "";
+    sayText("cleared");
 }
 
-// Notes:
-// Need to round answers with long decimals so they don't overflow
-// Add keyboard support (might have issues with /)
+let synth = window.speechSynthesis;
+
+let voiceChoice;
+setTimeout(() => {
+    voiceChoice = synth.getVoices()[4];
+}, 300);
+
+function sayText(message) {
+    const utterThis = new SpeechSynthesisUtterance(message);
+    utterThis.voice = voiceChoice;
+    utterThis.lang = "en-US";
+    synth.speak(utterThis);
+}

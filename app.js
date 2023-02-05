@@ -12,6 +12,7 @@ const clearKey = document.getElementById('clear');
 const enterKey = document.getElementById('enter');
 const decimalKey = document.getElementById('decimal');
 const deleteKey = document.getElementById('delete');
+const invertKey = document.getElementById('invert');
 
 // Create buttons for all numbers, functions, and equals key
 
@@ -21,6 +22,7 @@ operateKeys.forEach(operateKey => operateKey.addEventListener("click", () => {ap
 decimalKey.addEventListener("click", addDecimal);
 enterKey.addEventListener("click", () => solve(operandOne, numTwo, operator));
 clearKey.addEventListener("click", clear);
+invertKey.addEventListener("click", () => {appendEntry("sign");})
 
 
 // Create calculator display
@@ -39,15 +41,35 @@ function handleInput(e) {
 }
 
 function appendEntry(num) {
-    if (operandOne === "") {
-        botScreen.textContent += num;
-        numOne += num;
-    } else if (operandOne !== "" && operator === "/" && numTwo === "0" && num === "0") {
-        botScreen.textContent = ":(";
-    } else if (operandOne !== "" && operator !== null) {
-        botScreen.textContent += num;
-        numTwo += num;
+    if (num === "sign") {
+        if (operandOne === "" && botScreen.textContent === numOne) {
+            numOne = changeSign(numOne);
+            botScreen.textContent = numOne;
+        } else if (operandOne !== "" && operator !== null) {
+            numTwo = changeSign(numTwo);
+            botScreen.textContent = numTwo;
+        }
+    } else {
+        if (operandOne === "") {
+            if (numOne.length < 13) {
+                botScreen.textContent += num;
+                numOne += num;
+            }
+        } else if (operandOne !== "" && operator === "/" && numTwo === "0" && num === "0") {
+            botScreen.textContent = "ERROR";
+        } else if (operandOne !== "" && operator !== null) {
+            if (numTwo.length < 13) {
+                botScreen.textContent += num;
+                numTwo += num;
+            }
+        }
     }
+}
+
+function changeSign(value) {
+    const invertNum = -value;
+    invertStr = invertNum.toString();
+    return invertStr;
 }
 
 // Function to add decimal
@@ -97,17 +119,15 @@ function appendOperator(opSign) {
     }
 }
 
-//Function to round
-
-// function round(value, decimals) {
-//     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-// }
-
-function shorten(e) {
-    if (e.length > 10) {
-        return e.slice(0,10);
+function shorten(num) {
+    let str = num.toString();
+    if (str.length > 14) {
+        roundStr = str.slice(13, 15);
+        round = Math.round(Number(roundStr)/100);
+        newStr = str.slice(0, 13)+`${round}`
+        return Number(newStr);
     } else {
-        return e;
+        return num;
     }
 }
 
@@ -118,28 +138,23 @@ function solve(operandOne, numTwo, operator) {
     switch (operator) {
         case "+":
             value = operandOne + operandTwo;
-            fit = shorten(value);
-            result = parseFloat(fit);
+            result = shorten(value);
             break;
         case "-":
             value = operandOne - operandTwo;
-            fit = shorten(value);
-            result = parseFloat(fit);
+            result = shorten(value);
             break;
         case "*":
             value = operandOne * operandTwo;
-            fit = shorten(value);
-            result = parseFloat(fit);
+            result = shorten(value);
             break;
         case "/":
             value = operandOne / operandTwo;
-            fit = shorten(value);
-            result = parseFloat(fit);
+            result = shorten(value);
             break;
         case "^":
             value = operandOne ** operandTwo;
-            fit = shorten(value);
-            result = parseFloat(fit);
+            result = shorten(value);
             break;
     }
     if (secOperator !== null) {
@@ -151,7 +166,7 @@ function solve(operandOne, numTwo, operator) {
     } else {
         topScreen.textContent = `${operandOne} ${operator} ${operandTwo} =`;
         botScreen.textContent = `${result}`;
-        numOne = result;
+        numOne = result.toString();
         resetHard = "hard";
         reset(resetHard);
     }
@@ -163,6 +178,7 @@ function solve(operandOne, numTwo, operator) {
 function reset(method) {
     switch(method) {
         case "hard":
+            operandOne = "";
             numTwo = "";
             operandTwo = "";
             operator = null;
